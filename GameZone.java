@@ -145,12 +145,7 @@ public class GameZone {
 					sc.close();
 					break;		
 				
-		 		} else {
-		 			if (choice < 1 || choice > 3 || choice != (int)choice) {
-			 		System.out.println("Your input was invalid. Please enter 1, 2, or 3.");
-			 		choice = 1;
-			 	}
-		 		}
+		 		} 
 			} while (choice != 3);	 
 	
 		 }

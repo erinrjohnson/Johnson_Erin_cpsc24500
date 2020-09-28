@@ -70,7 +70,6 @@ public class GameZone {
 			 //this next chunk of code will manage choice 1- which is the Twenty-One Game
 			 if (choice == 1) {
 			 int player = 0;
-			 //String y = "";
 			 //loop until user wants more cards
 			 char y;
 			 do{
@@ -144,10 +143,7 @@ public class GameZone {
 				} else if  (choice == 3) {
 					System.out.println("Thank you for playing! ");
 					sc.close();
-					break;
-				//} else {
-					
-					//System.out.println("Your input was invalid. Please enter 1, 2, or 3.");			
+					break;		
 				
 		 		} else {
 		 			if (choice < 1 || choice > 3 || choice != (int)choice) {

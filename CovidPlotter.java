@@ -93,7 +93,8 @@ public class CovidPlotter {
 		 plot.setAxisLabels("Day", "Deaths");
 		 c.add(plot, BorderLayout.CENTER);
 		 frm.setVisible(true);
-		 //need to do current day - previous day 
+		 //need to do current day - previous day
+//i really tried 
 	 }
 	 /**
 	  * @param args

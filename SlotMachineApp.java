@@ -1,6 +1,6 @@
 /**
  * @author: Erin Johnson
- * @description: n this project, you will create a slot machine that has four slots. The slots are shapes-
+ * @description: In this project, you will create a slot machine that has four slots. The slots are shapes-
  * circles or squares. They can be yellow, green, orange, red or blue in color. The player will start with $5.
  * They can bet all their money by pressing the Max button, half their money by pressing the Mid
  * button, or just a tenth of their money by pressing the Min button.
@@ -340,9 +340,9 @@ class SlotMachineFrame extends JFrame{
 				if (jfc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 					tw = new TileWriter();
 					if (tw.writeToText(jfc.getSelectedFile(), pan.getTiles())) {
-						JOptionPane.showMessageDialog(null, "Tiles were written :)");
+						JOptionPane.showMessageDialog(null, "Tiles were written.");
 					} else {
-						JOptionPane.showMessageDialog(null, "Tiles could not be written :(");
+						JOptionPane.showMessageDialog(null, "Tiles could not be written.");
 					}
 				}
 				
@@ -391,7 +391,7 @@ class SlotMachineFrame extends JFrame{
 		Double userAmount = 5.00;
 		//setBounds of app frame
 		setBounds(100,100,800,500);//l,t,w,h
-		setTitle("Las Vegas Slot Machine");
+		setTitle("Vegas Baby Vegas Slot Machine");
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
 		pan = new TilePanel();

@@ -7,6 +7,9 @@
  * 
  * reference source: MouseandMenuAPP done in class
  */
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -33,6 +36,8 @@ import javax.swing.JTextField;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -42,6 +47,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * the Tile class holds the shape and color codes and has get and set functions, two constructors, a setRandomly function
@@ -87,14 +93,11 @@ class Tile {
 		setShapeColor(color);
 		setShapeType(type);
 	}
-	//tile randomizer named setRandomly to alter shape type and shape color
-	//color order according to assignment document: yellow, green, orange, red, or blue
-	//need a series of if/else statements 0-3 for the ints of the colors 
-	//also need if/else to store shape as being either circle or square, use ""
-	public void setRandomly() {
+	
+	public String setRandomlyColor() {
 		Random rand = new Random();
-		int randType = rand.nextInt(2);
 		int randShape = rand.nextInt(5);
+		String shapeColor;
 		if (randShape == 0) {
 			shapeColor = "YELLOW";
 		} else if (randShape == 1) {
@@ -106,12 +109,25 @@ class Tile {
 		} else {
 			shapeColor = "BLUE";
 		}
-		if (randType == 0) {
-			shapeType = "Circle";
-		} else {
-			shapeType = "Square";
-		}
+		
+		return shapeColor;
 	}
+	
+	public String  setRandomlyType() {
+		Random rand = new Random();
+		int randType = rand.nextInt(2);
+		
+		String shapeType;
+		if (randType == 1) {
+			shapeType = "circle";
+		} 
+		else {
+			shapeType = "square";
+		}
+		
+		return shapeType;
+	}
+
 	
 	//toString function to return comprehensive information grabbed from setRandomly
 	public String toString() {
@@ -132,15 +148,81 @@ class TilePanel extends JPanel implements MouseListener, MouseMotionListener {
 	public void setTiles(ArrayList<Tile> tiles) {
 		this.tiles = tiles;
 	}
-	
+	//tile randomizer named setRandomly to alter shape type and shape color
+		//color order according to assignment document: yellow, green, orange, red, or blue
+		//need a series of if/else statements 0-3 for the ints of the colors 
+		//also need if/else to store shape as being either circle or square, use ""
+		public String setRandomlyColor() {
+			Random rand = new Random();
+			int randShape = rand.nextInt(5);
+			String shapeColor;
+			if (randShape == 0) {
+				shapeColor = "YELLOW";
+			} else if (randShape == 1) {
+				shapeColor = "GREEN";
+			} else if (randShape == 2) {
+				shapeColor = "ORANGE";
+			} else if (randShape == 3) {
+				shapeColor = "RED";
+			} else {
+				shapeColor = "BLUE";
+			}
+			
+			return shapeColor;
+		}
+		
+		public String  setRandomlyType() {
+			Random rand = new Random();
+			int randType = rand.nextInt(2);
+			
+			String shapeType;
+			if (randType == 1) {
+				shapeType = "circle";
+			} 
+			else {
+				shapeType = "square";
+			}
+			
+			return shapeType;
+		}
 	public TilePanel() {
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		tiles = new ArrayList<Tile>();
-		tiles.add(new Tile(25, "YELLOW", "circle"));
-		tiles.add(new Tile(225, "BLUE", "square"));
-		tiles.add(new Tile(425, "RED", "square"));
-		tiles.add(new Tile(625, "RED", "square"));
+		tiles.add(new Tile(25, setRandomlyColor(), setRandomlyType()));
+		tiles.add(new Tile(225, setRandomlyColor(),setRandomlyType()));
+		tiles.add(new Tile(425, setRandomlyColor(), setRandomlyType()));
+		tiles.add(new Tile(625, setRandomlyColor(), setRandomlyType()));
+		
+	}
+	//spinny bc why not :)
+	public void slotSpin(int numSlotSpin) {
+
+		if(numSlotSpin==4) {
+		tiles.get(0).setShapeColor(setRandomlyColor());
+		tiles.get(0).setShapeType(setRandomlyType());
+		tiles.get(1).setShapeColor(setRandomlyColor());
+		tiles.get(1).setShapeType(setRandomlyType());
+		tiles.get(2).setShapeColor(setRandomlyColor());
+		tiles.get(2).setShapeType(setRandomlyType());
+		tiles.get(3).setShapeColor(setRandomlyColor());
+		tiles.get(3).setShapeType(setRandomlyType());}
+		else if(numSlotSpin==3) {
+			tiles.get(2).setShapeColor(setRandomlyColor());
+			tiles.get(2).setShapeType(setRandomlyType());
+			tiles.get(1).setShapeColor(setRandomlyColor());
+			tiles.get(1).setShapeType(setRandomlyType());
+			tiles.get(0).setShapeColor(setRandomlyColor());
+			tiles.get(0).setShapeType(setRandomlyType());}
+		else if(numSlotSpin==2) {
+			tiles.get(1).setShapeColor(setRandomlyColor());
+			tiles.get(1).setShapeType(setRandomlyType());
+			tiles.get(0).setShapeColor(setRandomlyColor());
+			tiles.get(0).setShapeType(setRandomlyType());}
+		else {
+
+			tiles.get(0).setShapeColor(setRandomlyColor());
+			tiles.get(0).setShapeType(setRandomlyType());}
 	}
 	//handle shape and color graphics in paintComponent 
 	public void paintComponent(Graphics g) {
@@ -177,6 +259,7 @@ class TilePanel extends JPanel implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
+	
 //abstract mouse commands 
 //follow example from class for help
 	public String getMouseStatus() {
@@ -204,24 +287,32 @@ class TilePanel extends JPanel implements MouseListener, MouseMotionListener {
 	public void mouseClicked(MouseEvent e) { 
 		//need to account for each set of circumstances with the shapes and colors 
 		mouseStatus = String.format("Mouse clicked at (%d, %d)", e.getX(), e.getY());
-		if ((e.getX() >= 25 && e.getX() <= 175) && (e.getY() >= 25 && e.getY() <= 175)) {
-			tiles.get(0).setRandomly();
+			if ((e.getX() >= 25 && e.getX() <= 175) && (e.getY() >= 25 && e.getY() <= 175)) {
+			tiles.get(0).setShapeColor(setRandomlyColor());
+			tiles.get(0).setShapeType(setRandomlyType());
+			
 			System.out.println(tiles.get(0));
 		} 
 		
 		if ((e.getX() >= 225 && e.getX() <= 375) && (e.getY() >= 25 && e.getY() <= 175)) {
-			tiles.get(1).setRandomly();
+			tiles.get(1).setShapeColor(setRandomlyColor());
+			tiles.get(1).setShapeType(setRandomlyType());
 		}
 		
 		if ((e.getX() >= 425 && e.getX() <= 575) && (e.getY() >= 25 && e.getY() <= 175)) {
-			tiles.get(2).setRandomly();
+			tiles.get(2).setShapeColor(setRandomlyColor());
+			tiles.get(2).setShapeType(setRandomlyType());
 		}
 		
 		if ((e.getX() >= 625 && e.getX() <= 775) && (e.getY() >= 25 && e.getY() <= 175)) {
-			tiles.get(3).setRandomly();
+			tiles.get(3).setShapeColor(setRandomlyColor());
+			tiles.get(3).setShapeType(setRandomlyType());
 		}
+		
 		repaint();
+		
 	}
+	
 	public void mouseMoved(MouseEvent e) { 
 		mouseStatus = String.format("Mouse moved at (%d, %d)", e.getX(), e.getY());
 		repaint();
@@ -236,7 +327,13 @@ class TilePanel extends JPanel implements MouseListener, MouseMotionListener {
  * the TileWriter class writes the tiles to a file in text, binary, or XML format, based on the file's extension
  */
 class TileWriter {
-	public boolean writeToText(String fname, ArrayList<Tile> tiles) {//array list
+	/**
+	 * This function writes tiles to a text file.
+	 * @param fname the name of the file
+	 * @param tiles the list of tiles to write
+	 * @return true if successful, false if an exception happens
+	 */
+	public boolean writeToText(String fname, ArrayList<Tile> tiles) {
 		File f = new File(fname);
 		return writeToText(f, tiles);
 	}
@@ -249,6 +346,80 @@ class TileWriter {
 			}
 			pw.close();
 			return true;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
+	
+	/**
+	 * This function writes tiles to a binary file.
+	 * @param fname name of binary file
+	 * @param tiles tiles the list of tiles to write
+	 * @return true if successful, false if an exception happens
+	 */
+	public boolean writeToBinary(String fname, ArrayList<Tile> tiles) {
+		File f = new File(fname);
+		return writeToBinary(f, tiles);
+	}
+	public boolean writeToBinary(File f, ArrayList<Tile> tiles) {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+			oos.writeObject(tiles);
+			oos.close();
+			return true;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
+	
+	/**
+	 * This function writes tiles to a xml file.
+	 * @param fname name of xml file 
+	 * @param tiles tiles the list of tiles to write
+	 * @return true if successful, false if an exception happens
+	 */
+	public boolean writeToXML(String fname, ArrayList<Tile> tiles) {
+		File f = new File(fname);
+		return writeToXML(f, tiles);
+	}
+	public boolean writeToXML(File f, ArrayList<Tile> tiles) {
+		try {
+			XMLEncoder enc = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(f)));
+			enc.writeObject(tiles);
+			enc.close();
+			return true;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
+	
+	public boolean write(String fname, ArrayList<Tile> tiles) {
+		File f = new File(fname);
+		return write(f, tiles);
+	}
+	
+	/**
+	 * This writes tile data to whatever file format the user wants
+	 * based on the extension of the file's name
+	 * .txt - text
+	 * .bin = binary
+	 * .xml - xml
+	 * @param f the file object
+	 * @param tiles the list of tiles to write
+	 * @return true if successful, false otherwise
+	 */
+	public boolean write(File f, ArrayList<Tile> tiles) {
+		try {
+			String fname = f.getName().toUpperCase();
+			if (fname.endsWith(".TXT")) {
+				return writeToText(f, tiles);
+			} else if (fname.endsWith(".BIN")) {
+				return writeToBinary(f, tiles);
+			} else if (fname.endsWith(".XML")) {
+				return writeToXML(f, tiles);
+			} else {
+				return false;
+			}
 		} catch (Exception ex) {
 			return false;
 		}
@@ -269,23 +440,20 @@ class TileReader {
 		File f = new File(fname);
 		return readFromText(f);
 	}
-	
 	public ArrayList<Tile> readFromText(File f) {
 		try {
 			ArrayList<Tile> tilesRead = new ArrayList<Tile>();
 			Scanner fsc = new Scanner(f);
 			String line;
 			String[] parts;
-			int x;
 			String color, type;
 			Tile tile;
 			while (fsc.hasNextLine()) {
 				line = fsc.nextLine();
 				parts = line.split(" ");
-				x = Integer.parseInt(parts[0]);
-				color = parts[1];
-				type = parts[2];
-				tile = new Tile(x, color, type);
+				color = parts[0];
+				type = parts[1];
+				tile = new Tile(0, color, type);
 				tilesRead.add(tile);
 			}
 			fsc.close();
@@ -294,8 +462,59 @@ class TileReader {
 			return null;
 		}
 	}
+	public ArrayList<Tile> readFromBinary(String fname) {
+		File f = new File(fname);
+		return readFromBinary(f);
+	}
+	@SuppressWarnings("unchecked")
+	public ArrayList<Tile> readFromBinary(File f) {
+		try {
+			ArrayList<Tile> tilesRead;
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+			tilesRead = (ArrayList<Tile>)ois.readObject();
+			ois.close();
+			return tilesRead;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	public ArrayList<Tile> readFromXML(String fname) {
+		File f = new File(fname);
+		return readFromXML(f);
+	}
+	public ArrayList<Tile> readFromXML(File f) {
+		try {
+			ArrayList<Tile> tilesRead;
+			XMLDecoder dec = new XMLDecoder(new BufferedInputStream(new FileInputStream(f)));
+			tilesRead = (ArrayList<Tile>)dec.readObject();
+			dec.close();
+			return tilesRead;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	public ArrayList<Tile> read(String fname) {
+		File f = new File(fname);
+		return read(f);
+	}
+	public ArrayList<Tile> read(File f) {
+		try {
+			String fname = f.getName().toUpperCase();
+			if (fname.endsWith(".TXT")) {
+				return readFromText(f);
+			} else if (fname.endsWith(".BIN")) {
+				return readFromBinary(f);
+			} else if (fname.endsWith(".XML")) {
+				return readFromXML(f);
+			} else {
+				return null;
+			}
+		} catch (Exception ex) {
+			return null;
+		}
+	}
 }
-
 /**
  *the SlotMachineFrame follows the MenuandMouseFrame code and has the following components:
  *a SlotMachineFrame with three buttons, a "$" label, and a JTextField that shows the
@@ -305,12 +524,14 @@ class TileReader {
  *github project. Attach ActionListeners to Load Tiles, Save Tiles, Exit, and Help
  */
 class SlotMachineFrame extends JFrame{
-	private TilePanel pan;
+	private TilePanel pan = new TilePanel();
+	private Container c = getContentPane();
+	private Double userAmount = 5.00;
+	private JTextField Money = new JTextField(3);
 	public void setupMenu() {
 		JMenuBar mbar = new JMenuBar();
 		JMenu mnuFile = new JMenu("File");
 		mbar.add(mnuFile);
-		
 		JMenuItem miLoadTiles = new JMenuItem("Load Tiles");
 		miLoadTiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -331,7 +552,6 @@ class SlotMachineFrame extends JFrame{
 			
 		});
 		mnuFile.add(miLoadTiles);
-		
 		JMenuItem miSaveTiles = new JMenuItem("Save Tiles");
 		miSaveTiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -344,12 +564,10 @@ class SlotMachineFrame extends JFrame{
 					} else {
 						JOptionPane.showMessageDialog(null, "Tiles could not be written.");
 					}
-				}
-				
+				}	
 			}
 		});
 		mnuFile.add(miSaveTiles);
-		
 		JMenuItem miPrint = new JMenuItem("Print");
 		miPrint.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -357,23 +575,18 @@ class SlotMachineFrame extends JFrame{
 			}
 		});
 		mnuFile.add(miPrint);
-		
 		JMenuItem miRestart = new JMenuItem("Restart");
 		miRestart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
+			public void actionPerformed(ActionEvent e) {	
 			}
 		});
 		mnuFile.add(miRestart);
-		
 		JMenuItem miExit = new JMenuItem("Exit");
 		miExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
 			}
 		});
 		mnuFile.add(miExit);
-		
 		JMenu mnuHelp = new JMenu("Help");
 		mbar.add(mnuHelp);
 		JMenuItem miAbout = new JMenuItem("About");
@@ -383,49 +596,92 @@ class SlotMachineFrame extends JFrame{
 			}
 		});
 		mnuHelp.add(miAbout);
-		setJMenuBar(mbar);
-		
+		setJMenuBar(mbar);	
 	}
-	
 	public void setupLook() { 
-		Double userAmount = 5.00;
 		//setBounds of app frame
 		setBounds(100,100,800,500);//l,t,w,h
 		setTitle("Vegas Baby Vegas Slot Machine");
-		Container c = getContentPane();
+		//Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		pan = new TilePanel();
-		c.add(pan, BorderLayout.CENTER);
 		JPanel panSouth = new JPanel();
 		panSouth.setLayout(new FlowLayout());
 		JButton btnMax = new JButton("Max");
 		panSouth.add(btnMax);
+		btnMax.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				quickSlotRoll(4);
+				//add logic here to add money when things are good
+				userAmount= userAmount+10;
+				Money.setText(userAmount.toString());}
+		});
 		JButton btnMid = new JButton("Mid");
 		panSouth.add(btnMid);
+		btnMid.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				quickSlotRoll(4);
+				//add logic here to add money when things are good
+				userAmount= userAmount+10;
+				Money.setText(userAmount.toString());}
+		});
 		JButton btnMin = new JButton("Min");
 		panSouth.add(btnMin);
+		btnMin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				quickSlotRoll(4);
+				//add logic here to add money when things are good
+				userAmount= userAmount+10;
+				Money.setText(userAmount.toString());
+				}
+		});
 		panSouth.add(new JLabel("$"));
-		JTextField Money = new JTextField(3);
 		Money.setText(userAmount.toString()); 
 	    panSouth.add(Money);
-		c.add(panSouth, BorderLayout.SOUTH);
-		setupMenu();
+	    Money.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				quickSlotRoll(4);
+				//add logic here to add money when things are good
+				userAmount= userAmount+Float.parseFloat(Money.getText());
+				Money.setText(userAmount.toString());
+				}
+		});
+		c.add(panSouth, BorderLayout.SOUTH);		
 	}
-	
+	public void slotRoll(int numSlotSpin) { 
+		for (int i = 0; i < 30; i++) {
+			pan.slotSpin(numSlotSpin);
+			c.add(pan, BorderLayout.CENTER);
+			repaint();
+			try {
+			TimeUnit.MILLISECONDS.sleep(50);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+			}}
+	public void quickSlotRoll(int numSlotSpin) { 
+			pan.slotSpin(numSlotSpin);
+			c.add(pan, BorderLayout.CENTER);
+			repaint();
+		}
 	public SlotMachineFrame() {
 		setupLook();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 }
-
 /**
  * main body
  */
 public class SlotMachineApp {
 	public static void main(String[] args) {
 		SlotMachineFrame frm = new SlotMachineFrame(); 
+		frm.setupMenu();
+		frm.setupLook();
 		frm.setVisible(true);
-		frm.setLocationRelativeTo(null);
+		frm.slotRoll(4);
+		frm.slotRoll(3);
+		frm.slotRoll(2);
+		frm.slotRoll(1);
+
 	}
 
 }

@@ -83,7 +83,7 @@ class Tile {
 		shapeType = type;
 	}
 	//constructors
-	public Tile() {
+	public Tile(int color, int type) {
 		store = 0;
 		shapeColor = "YELLOW";
 		shapeType = "circle";
@@ -133,12 +133,17 @@ class Tile {
 	public String toString() {
 		return String.format("%d %s %s", store, shapeColor, shapeType);
 	}
+	public void setRandomly(Random rand) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
 /**
  *the TilePanel class shows a list of four tiles and enables the user to change one of the tiles by clicking on it
  */
 class TilePanel extends JPanel implements MouseListener, MouseMotionListener {
+	private static final long serialVersionUID = 1L;
 	private String mouseStatus;
 	private ArrayList<Tile> tiles;
 	public ArrayList<Tile> getTiles() {
@@ -189,15 +194,14 @@ class TilePanel extends JPanel implements MouseListener, MouseMotionListener {
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		tiles = new ArrayList<Tile>();
+		tiles = new ArrayList<Tile>();
 		tiles.add(new Tile(25, setRandomlyColor(), setRandomlyType()));
 		tiles.add(new Tile(225, setRandomlyColor(),setRandomlyType()));
 		tiles.add(new Tile(425, setRandomlyColor(), setRandomlyType()));
 		tiles.add(new Tile(625, setRandomlyColor(), setRandomlyType()));
 		
 	}
-	//spinny bc why not :)
 	public void slotSpin(int numSlotSpin) {
-
 		if(numSlotSpin==4) {
 		tiles.get(0).setShapeColor(setRandomlyColor());
 		tiles.get(0).setShapeType(setRandomlyType());
@@ -425,12 +429,6 @@ class TileWriter {
 		}
 	}
 }
-/**
- *uhhh not yet
- */
-class TileChecker{	
-	
-}
 
 /**
  *the TileReader class reads the tiles from a file in text, binary, or XML format
@@ -440,20 +438,21 @@ class TileReader {
 		File f = new File(fname);
 		return readFromText(f);
 	}
+	//read in the case of text
 	public ArrayList<Tile> readFromText(File f) {
 		try {
 			ArrayList<Tile> tilesRead = new ArrayList<Tile>();
 			Scanner fsc = new Scanner(f);
 			String line;
 			String[] parts;
-			String color, type;
+			int color, type;
 			Tile tile;
 			while (fsc.hasNextLine()) {
 				line = fsc.nextLine();
 				parts = line.split(" ");
-				color = parts[0];
-				type = parts[1];
-				tile = new Tile(0, color, type);
+				color = Integer.parseInt(parts[0]);
+				type = Integer.parseInt(parts[1]);
+				tile = new Tile(color, type);
 				tilesRead.add(tile);
 			}
 			fsc.close();
@@ -466,6 +465,7 @@ class TileReader {
 		File f = new File(fname);
 		return readFromBinary(f);
 	}
+	//read in the case of binary
 	@SuppressWarnings("unchecked")
 	public ArrayList<Tile> readFromBinary(File f) {
 		try {
@@ -482,6 +482,8 @@ class TileReader {
 		File f = new File(fname);
 		return readFromXML(f);
 	}
+	//read in the case of XML
+	@SuppressWarnings("unchecked")
 	public ArrayList<Tile> readFromXML(File f) {
 		try {
 			ArrayList<Tile> tilesRead;
@@ -493,7 +495,7 @@ class TileReader {
 			return null;
 		}
 	}
-	
+	//hub of if/else statements choosing which to call based on file extension
 	public ArrayList<Tile> read(String fname) {
 		File f = new File(fname);
 		return read(f);
@@ -515,6 +517,76 @@ class TileReader {
 		}
 	}
 }
+
+/**
+ *the TileChecker class checks for matches 
+ *it will detect for winning combinations in both shapes and colors or just in colors
+ */
+
+class TileChecker {
+	//no match 
+	//colors of the shapes match
+	///shapes AND colors match
+	public int tilesCheck(ArrayList<Tile> tiles) {
+		int matchType = 2; //in the condition that all tiles are matching-- have to start with BOTH conditions being met
+		for (int i = 1; i < tiles.size(); i ++) { 
+			 if (tiles.get(0).getColor() != tiles.get(i).getColor()) { //colors don't match
+				 matchType = 0; //no match condition
+			//need an else in the case that colors match
+			 } else { 
+				 //shapes do not match
+				 if(matchType ==2) {
+				 if (tiles.get(0).getShape() != tiles.get(i).getShape()) {
+					 matchType = 1; 
+				 }}
+			 }
+		}
+		System.out.println(matchType);
+		return matchType;
+	}
+
+
+}
+
+/**
+ * the TileRadomizer randomizes the four tiles
+ * it will randomize the slots whenever the user clicks on the Max, Mid, or Min buttons, and also randomize it
+ * at the very beginning of the game so that the TilePanel shows a random arrangement at the start
+ */
+class TileRandomizer {
+	public void randomizeTiles(ArrayList<Tile> tiles, int numSlotSpin) {
+		
+		if(numSlotSpin==4) {
+			tiles.get(0).setShapeColor(tiles.get(0).setRandomlyColor());
+			tiles.get(0).setShapeType(tiles.get(0).setRandomlyType());
+			tiles.get(1).setShapeColor(tiles.get(1).setRandomlyColor());
+			tiles.get(1).setShapeType(tiles.get(1).setRandomlyType());
+			tiles.get(2).setShapeColor(tiles.get(2).setRandomlyColor());
+			tiles.get(2).setShapeType(tiles.get(2).setRandomlyType());
+			tiles.get(3).setShapeColor(tiles.get(3).setRandomlyColor());
+			tiles.get(3).setShapeType(tiles.get(3).setRandomlyType());}
+			else if(numSlotSpin==3) {
+				tiles.get(2).setShapeColor(tiles.get(2).setRandomlyColor());
+				tiles.get(2).setShapeType(tiles.get(2).setRandomlyType());
+				tiles.get(1).setShapeColor(tiles.get(1).setRandomlyColor());
+				tiles.get(1).setShapeType(tiles.get(1).setRandomlyType());
+				tiles.get(0).setShapeColor(tiles.get(0).setRandomlyColor());
+				tiles.get(0).setShapeType(tiles.get(0).setRandomlyType());}
+			else if(numSlotSpin==2) {
+				tiles.get(1).setShapeColor(tiles.get(1).setRandomlyColor());
+				tiles.get(1).setShapeType(tiles.get(1).setRandomlyType());
+				tiles.get(0).setShapeColor(tiles.get(0).setRandomlyColor());
+				tiles.get(0).setShapeType(tiles.get(0).setRandomlyType());}
+			else {
+
+				tiles.get(0).setShapeColor(tiles.get(0).setRandomlyColor());
+				tiles.get(0).setShapeType(tiles.get(0).setRandomlyType());}
+		}
+	
+	}
+
+	
+
 /**
  *the SlotMachineFrame follows the MenuandMouseFrame code and has the following components:
  *a SlotMachineFrame with three buttons, a "$" label, and a JTextField that shows the
@@ -524,14 +596,31 @@ class TileReader {
  *github project. Attach ActionListeners to Load Tiles, Save Tiles, Exit, and Help
  */
 class SlotMachineFrame extends JFrame{
+	private static final long serialVersionUID = 1L;
+	//use TilePanel to display tiles
 	private TilePanel pan = new TilePanel();
 	private Container c = getContentPane();
-	private Double userAmount = 5.00;
-	private JTextField Money = new JTextField(3);
+	//use TileChecker to check tiles for matching shapes and colors
+	private TileChecker tc; 
+	//use TileRandomizer to randomize all the tiles on the panel when buttons are clicked
+	private TileRandomizer tr;
+	//need a random variable
+	private Random rand;
+	
+	//set up buttons
+	private JButton btnMax;
+	private JButton btnMid;
+	private JButton btnMin;
+	
+	//set up balance text field as well as user amount
+	private JTextField txtBalance;
+	private double userAmount = 5.00;
+	
 	public void setupMenu() {
 		JMenuBar mbar = new JMenuBar();
 		JMenu mnuFile = new JMenu("File");
 		mbar.add(mnuFile);
+		
 		JMenuItem miLoadTiles = new JMenuItem("Load Tiles");
 		miLoadTiles.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -551,6 +640,7 @@ class SlotMachineFrame extends JFrame{
 			}
 			
 		});
+		
 		mnuFile.add(miLoadTiles);
 		JMenuItem miSaveTiles = new JMenuItem("Save Tiles");
 		miSaveTiles.addActionListener(new ActionListener() {
@@ -567,6 +657,7 @@ class SlotMachineFrame extends JFrame{
 				}	
 			}
 		});
+		
 		mnuFile.add(miSaveTiles);
 		JMenuItem miPrint = new JMenuItem("Print");
 		miPrint.addActionListener(new ActionListener() {
@@ -574,16 +665,28 @@ class SlotMachineFrame extends JFrame{
 				
 			}
 		});
+		
 		mnuFile.add(miPrint);
 		JMenuItem miRestart = new JMenuItem("Restart");
 		miRestart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {	
+			public void actionPerformed(ActionEvent e) {
+				//need to reset balance
+				userAmount = 5.00;
+				txtBalance.setText(String.format("%.2f", userAmount));
+				//random
+				quickSlotRoll(4);
+				//need to reset buttons
+				btnMax.setEnabled(true);
+				btnMid.setEnabled(true);
+				btnMin.setEnabled(true);
 			}
 		});
+		
 		mnuFile.add(miRestart);
 		JMenuItem miExit = new JMenuItem("Exit");
 		miExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
 			}
 		});
 		mnuFile.add(miExit);
@@ -598,55 +701,120 @@ class SlotMachineFrame extends JFrame{
 		mnuHelp.add(miAbout);
 		setJMenuBar(mbar);	
 	}
+	
+	/**
+	 * call function to set up the appearance of the frame
+	 */
 	public void setupLook() { 
 		//setBounds of app frame
 		setBounds(100,100,800,500);//l,t,w,h
+		//set title
 		setTitle("Vegas Baby Vegas Slot Machine");
-		//Container c = getContentPane();
 		c.setLayout(new BorderLayout());
+		pan = new TilePanel(); // sets up tile panel
+		c.add(pan, BorderLayout.CENTER);
+		// sets up bottom bar with max, mid, and min buttons
 		JPanel panSouth = new JPanel();
 		panSouth.setLayout(new FlowLayout());
-		JButton btnMax = new JButton("Max");
+		btnMax = new JButton("Max");
 		panSouth.add(btnMax);
+		btnMid = new JButton("Mid");
+		panSouth.add(btnMid);
+		btnMin = new JButton("Min");
+		panSouth.add(btnMin);
+		panSouth.add(new JLabel("$"));
+		txtBalance = new JTextField(6);
+		txtBalance.setText(String.format("%.2f", userAmount)); // sets initial balance
+		panSouth.add(txtBalance);
+		c.add(panSouth, BorderLayout.SOUTH);
+		
+		//balance setup
+		userAmount = Double.parseDouble(txtBalance.getText());
+		
+		//type of bet
+		//max (all shapes and colors)- 100 times wagered
+		//max (just colors) - 25 times wagered
+		//mid (all shapes and colors)- 50 times wagered
+		//mid (just colors)- 10 times wagered
+		//min (all shapes and colors) - 10 times wagered
+		//min (just colors)- 5 times wagered
+		
 		btnMax.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				quickSlotRoll(4);
-				//add logic here to add money when things are good
-				userAmount= userAmount+10;
-				Money.setText(userAmount.toString());}
+					tr.randomizeTiles(pan.getTiles(), 4);
+					repaint();
+				if (tc.tilesCheck(pan.getTiles()) == 0) { //no match
+					txtBalance.setText(String.format("%.2f", 0.00));
+					btnMax.setEnabled(false); // disable buttons when user runs out of $
+					btnMid.setEnabled(false);
+					btnMin.setEnabled(false);
+				} else if (tc.tilesCheck(pan.getTiles()) == 1) { //only colors match
+					userAmount = userAmount*25;
+					txtBalance.setText(String.format("%.2f", userAmount));
+				} else { //colors and shapes match
+					userAmount = userAmount*100;
+					txtBalance.setText(String.format("%.2f", userAmount));
+				}
+			}
 		});
-		JButton btnMid = new JButton("Mid");
-		panSouth.add(btnMid);
+
 		btnMid.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				quickSlotRoll(4);
-				//add logic here to add money when things are good
-				userAmount= userAmount+10;
-				Money.setText(userAmount.toString());}
+				 double bet=(0.5*userAmount);
+				 
+				 
+					tr.randomizeTiles(pan.getTiles(), 4);
+					repaint();
+				if (tc.tilesCheck(pan.getTiles()) == 0) {//no match
+					userAmount -= bet;
+					txtBalance.setText(String.format("%.2f", userAmount));
+					if (Double.parseDouble(txtBalance.getText()) == 0.00) {//disable buttons when user runs out of $
+						btnMax.setEnabled(false);
+						btnMid.setEnabled(false);
+						btnMin.setEnabled(false);
+					
+					}
+				} else if (tc.tilesCheck(pan.getTiles()) == 1) {//only colors match
+					userAmount = userAmount+bet*10;
+					txtBalance.setText(String.format("%.2f", userAmount));
+				} else {//colors and shapes match
+					userAmount = userAmount+bet*50;
+					txtBalance.setText(String.format("%.2f", userAmount));
+				}
+			}
 		});
-		JButton btnMin = new JButton("Min");
-		panSouth.add(btnMin);
+		
 		btnMin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				quickSlotRoll(4);
-				//add logic here to add money when things are good
-				userAmount= userAmount+10;
-				Money.setText(userAmount.toString());
+				double bet=(0.1*userAmount);
+					tr.randomizeTiles(pan.getTiles(), 4);
+					repaint();
+				if (tc.tilesCheck(pan.getTiles()) == 0) { //no match
+					userAmount -= bet;
+					txtBalance.setText(String.format("%.2f", userAmount));
+					if (Double.parseDouble(txtBalance.getText()) == 0.00) { //disable buttons when user runs out of $
+						btnMax.setEnabled(false);
+						btnMid.setEnabled(false);
+						btnMin.setEnabled(false);
+					}
+				} else if (tc.tilesCheck(pan.getTiles()) == 1) { //shapes match
+					userAmount = userAmount+bet*5;
+					txtBalance.setText(String.format("%.2f", userAmount));
+				} else { //colors and shapes match
+					userAmount = userAmount+bet*10;
+					txtBalance.setText(String.format("%.2f", userAmount));
 				}
+				
+			}
 		});
-		panSouth.add(new JLabel("$"));
-		Money.setText(userAmount.toString()); 
-	    panSouth.add(Money);
-	    Money.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				quickSlotRoll(4);
-				//add logic here to add money when things are good
-				userAmount= userAmount+Float.parseFloat(Money.getText());
-				Money.setText(userAmount.toString());
-				}
-		});
-		c.add(panSouth, BorderLayout.SOUTH);		
-	}
+		
+		setupMenu();
+		// randomizes tiles at start of game
+		quickSlotRoll(4);
+		tr.randomizeTiles(pan.getTiles(), 4);
+		repaint();
+		
+	}	
 	public void slotRoll(int numSlotSpin) { 
 		for (int i = 0; i < 30; i++) {
 			pan.slotSpin(numSlotSpin);
@@ -664,6 +832,9 @@ class SlotMachineFrame extends JFrame{
 			repaint();
 		}
 	public SlotMachineFrame() {
+		tr = new TileRandomizer(); 
+		tc = new TileChecker();
+		rand = new Random();
 		setupLook();
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}

@@ -253,7 +253,7 @@ public class QuizApp {
 		  System.out.print("Enter name of file containing questions: "); 
 		  path = sc.nextLine();
 		  System.out.println();
-		  questions = qr.readFromJSON(path); //C:\codes\questions_without_answers.json
+		  questions = qr.readFromJSON(path); //C:\QuizTool\questions_without_answers.json
 		  do { //if user does not wish to exit
 				choice = showMenuAndGetChoice(sc); 
 				if (choice == 1) { //take a quiz case
